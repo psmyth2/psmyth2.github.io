@@ -1,0 +1,59 @@
+/* Stylesheet written by Rich Donohue and Carl Sack for Time Series Proportional Symbol Maps with Leaflet and JQuery */
+
+body {
+    font-family: sans-serif;
+}
+h2 {
+    font-size: 1.2em;
+    margin-top: 3px;
+}
+h2,div, span {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+#map {
+	height: 450px;
+	margin: 15px auto 15px;
+}
+.legend, .temporal-legend {
+    padding: 6px 10px;
+    font: 12px/14px Arial, Helvetica, sans-serif;
+    color: white;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+#legendTitle {
+    text-align: center;
+    margin-bottom: 15px;
+    font-variant: small-caps;
+    color: black;
+}
+.symbolsContainer {
+    float: left;
+	margin-left: 90px;
+}
+.legendCircle {
+     border-radius:50%; 
+     border: 1px solid #537898; 
+     background: rgba(43,81,89, .4);
+	 display: inline-block;
+}
+.legendValue {
+    position: absolute;
+    padding-top: 5px;
+    left: 85px;
+}
+.range-slider {
+    width: 250px;
+}
+.temporal-legend {
+    font-size: 1.2em;
+    text-align: center;
+    color: black;
+}
