@@ -1,20 +1,19 @@
 /****** GLOBAL VARIABLES *******/
 var mapWidth = 750, mapHeight = 410;
 var keyArray = ["1988",	"1989",	"1990",	"1991",	"1992",	"1993",	"1994",	"1995",	"1996",	"1997",	"1998",	"1999",	"2000",	"2001",	"2002",	"2003",	"2004",	"2005",	"2006",	"2007",	"2008",	"2009",	"2010",	"2011",	"2012",	"2013",	"2014",	"2015",	"2016"];
-var Category = ["gradeData", "jurisdictionType" /*,totalSpending*/ ];
+var Category = ["gradeData","totalSpending","jurisdictionType","financeType" ];
 var expressed;
 var yearExpressed;
 var yearExpressedText;
 var colorize;
 var scale;
 var currentColors = [];
-var menuWidth = 300, menuHeight = 400;
+var menuWidth = 250, menuHeight = 400;
 var otherMenuWidth = 200, otherMenuHeight = 70;
 var menuInfoWidth = 250, menuInfoHeight = 100;
-var textArray = ["In 2016, there were <b>84</b> successful measures across the country. <b>39</b> of those measures were facilitated and supported by The Trust for Public Land's conservation finance services.", "Successful state measures passed from <b>1988 to Present</b>. "]
-var linkArray = ["<a href = '#overview'> We provide an overview of these services here.</a>", "<a href = '#jurisdiction'>  What kind of measures does LandVote track?</a>"];
-var removeCPC;
-var removeAbortion;
+var textArray = ["In 2016, there were <b>84</b> successful measures across the country. <b>39</b> of those measures were facilitated and supported by The Trust for Public Land's conservation finance services.","Total conservation funding approved from <b>1988 to Present</b>.","Successful state measures passed from <b>1988 to Present</b>.","Finance mechanisms for State approved measures from <b>1988 to Present</b>."]
+var linkArray = ["<a href = '#overview'> We provide an overview of these services here.</a>","<a href = '#spending'>  What kind of spending does LandVote track?</a>","<a href = '#jurisdiction'>  What kind of measures LandVote track?</a>","<a href = '#finance'>  What kinds of finance mechanisms exist for measures?</a>"];
+
 var joinedJson; //Variable to store the USA json combined with all attribute data
 
 // SET UP ARRAYS FOR CATEGORIES OF EACH VARIABLE
@@ -22,18 +21,35 @@ var joinedJson; //Variable to store the USA json combined with all attribute dat
     var arrayOverview = ["State",       
                         "County", 
                         "County and Municipal",
-                        "County,Municipal & Special District",
-                        "Municipal and Special District",
+                        "County,Municipal & Special Dist.",
+                        "Municipal and Special Dist.",
                         "Municipal",
-                        "Special District",
+                        "Special Dist.",
                         "none"];     
 
     //Variable array for Jurisdiction Type
     var arrayJurisdiction = [ "State Measure(s) Passed",     
-                        "No State Measures Passed" ]; 
+                        "No State Measures Passed",
+                            "No Data"];
+
+    var arraySpending = [ "$2,980,773,000 to $5,962,012,000",
+                        "$859,407,900 to $2,980,773,000",
+                        "$335,777,800 to $859,407,900",
+                        "0 to $335,777,800",     
+                        "No Data"];
+                            
+
+    var arrayfinanceType = [ "Bond",
+                        "Income tax",
+                        "Property tax",
+                        "Real estate transfer tax",     
+                        "Sales tax",
+                        "Other",
+                        "none"];
+                            
 
 //SET UP COLOR ARRAYS FOR EACH VARIABLE
-    //Color array for Overview & Waiting Period
+    //Color array for 2016 overview
     var colorArrayOverview = ["#005a32",      //State
                             "#238b45",      //County
                             "#41ab5d",      //County and Special Dist
@@ -44,16 +60,27 @@ var joinedJson; //Variable to store the USA json combined with all attribute dat
                             "#d9d9d9" ];     //none
                                
 
-    // Color array for Prohibited At
-    var colorArrayJurisdiction = ["#005a32",      //State Measure(s) Passed
-                                "#d9d9d9"];           //No State Measures 
+    // Color array for Jurisdiction type
+    var colorArrayJurisdiction = ["#005a33",//State Measure(s) Passed
+                                  "#f7f7f7", //No State Measures
+                                "#d9d9d9"];  //none          
 
 
-    // Color array for Ultrasound
-    /*var colorArrayUltrasound = ["#525252",      //Must be performed, offer to view
-                            "#636363",      //Must be performed
-                            "#969696",      //Must be offered
-                            "#d9d9d9"   ];*/  //None
+    // Color array for state spending
+    var colorArraySpending = ["#2171b5",     //0 to $335,777,800
+                            "#6baed6",      //$335,777,800 to $859,407,900
+                            "#bdd7e7",      //$859,407,900 to $2,980,773,000
+                            "#eff3ff",      //$2,980,773,000 to $5,962,012,00
+                            "#d9d9d9"];
+
+    var colorArrayFinance = ["#8dd3c7",      //Bond
+                            "#ffffb3",      //Income tax
+                            "#bebada",      //Property tax
+                            "#fb8072",      //Real estate transfer tax
+                            "#80b1d3",      //Sales tax
+                            "#fdb462",      //Other
+                            "#d9d9d9"];     //none
+                                   
 
 //SET UP VARIABLES FOR COLORSCALE & CHOROPLETH FUNCTIONS
 var currentColors = [];
@@ -64,8 +91,8 @@ var timelineFeatureArray = [];
 var colorizeChart; // colorScale generator for the chart
 var chartHeight = 200;
 var chartWidth = 882;
-var squareWidth = 18;
-var squareHeight = 18;
+var squareWidth = 15;
+var squareHeight = 15;
 var chartRect;
 var margin = {top: 80, right: 20, bottom: 30, left:10};
 var rectColor;
@@ -98,12 +125,13 @@ function initialize(){
     setMap();
     createMenu(arrayOverview, colorArrayOverview, "Measures Type Passed:", textArray[0], linkArray[0]);
     //createInset();
-    $(".Overview").css({'background-color': '#CCCCCC','color': '#333333'});
+    $(".Overview").css({'background-color': '#009fda','color': 'white'});
     //disables buttons on load
-    $('.stepBackward').prop('disabled', true);
-    $('.play').prop('disabled', true);
-    $('.pause').prop('disabled', true);
-    $('.stepForward').prop('disabled', true);
+    $('.stepBackward').hide('disabled', false);
+    $('.play').hide('disabled', false);
+    $('.pause').hide('disabled', false);
+    $('.stepForward').hide('disabled', false);
+    
 }; //End initialize
 
 //creates map
@@ -125,27 +153,26 @@ function setMap(){
     
     queue()
         .defer(d3.csv, "data/grades.csv")
+        .defer(d3.csv, "data/totalSpending.csv")
         .defer(d3.csv, "data/jurisdictionType.csv")
-        //.defer(d3.csv, "data/totalSpending/.csv")
+        .defer(d3.csv, "data/financeType.csv")
         .defer(d3.json, "data/usa.topojson")
-        .defer(d3.json, "data/CPCs.geojson")
-        .defer(d3.json, "data/AbortionProviders.geojson")
         .await(callback);
     
     //creates menu [overview starts on load]
     drawMenu();
         
     //retrieve and process json file and data
-    function callback(error, grade, jurisdictionType, usa /*totalSpending,*/ ){
+    function callback(error, grade, totalSpending, jurisdictionType, financeType, usa){
 
         //Variable to store the USA json with all attribute data
         joinedJson = topojson.feature(usa, usa.objects.states).features;
         colorize = colorScale(joinedJson);
 
         //Create an Array with CSV's loaded
-        var csvArray = [grade, jurisdictionType]; /*totalSpending,*/
+        var csvArray = [grade, totalSpending, jurisdictionType, financeType]; 
         //Names for the overall Label we'd like to assign them
-        var attributeNames = ["gradeData", "jurisdictionType"];/*totalSpending,*/
+        var attributeNames = ["gradeData","totalSpending","jurisdictionType","financeType"];
         //For each CSV in the array, run the LinkData function
         for (csv in csvArray){
             LinkData(usa, csvArray[csv], attributeNames[csv]);
@@ -202,40 +229,6 @@ function setMap(){
                 return choropleth(d, colorize);
             })
 
-        //data stuff for overlay
-        /*var cpcCount = [];
-        for (var a = 0; a < cpc.features.length; a++){
-            var cpc_count = cpc.features[a].properties.Count;
-            cpcCount.push(Number(cpc_count));
-        }
-        
-        //creates min and max of cpcs
-        var cpcMin = Math.min.apply(Math, cpcCount);
-        var cpcMax = Math.max.apply(Math, cpcCount);
-
-        //creates radius for CPC
-        var cpcRadius = d3.scale.sqrt()
-            .domain([cpcMin, cpcMax])
-            .range([2, 20]);
-        
-        //for abortion provider
-        var abortionCount = [];
-        for (var b = 0; b < abortionprovider.features.length; b++){
-            var abortion_count = abortionprovider.features[b].properties.Count;
-            abortionCount.push(Number(abortion_count));
-        }
-        
-        //creates min and max of abortion providers
-        var abortionMin = Math.min.apply(Math, abortionCount);
-        var abortionMax = Math.max.apply(Math, abortionCount);
-        
-        //creates radius 
-        var abortionRadius = d3.scale.sqrt()
-            .domain([abortionMin, abortionMax])
-            .range([2, 23]);
-
-        changeAttribute(yearExpressed, colorize);
-        overlay(path, cpcRadius, abortionRadius, map, cpc, abortionprovider);*/
     }; //END callback
 }; //END setmap
 
@@ -247,10 +240,10 @@ function drawMenu(){
         yearExpressed = keyArray[keyArray.length-1];
         d3.selectAll(".yearExpressedText").remove();
         drawMenuInfo(colorize, yearExpressed);
-        $('.stepBackward').prop('disabled', true);
-        $('.play').prop('disabled', true);
-        $('.pause').prop('disabled', true);
-        $('.stepForward').prop('disabled', true);
+        $('.stepBackward').hide('disabled', false);
+        $('.play').hide('disabled', false);
+        $('.pause').hide('disabled', false);
+        $('.stepForward').hide('disabled', false);
         d3.selectAll(".menu-options div").style({'background-color': '#e1e1e1','color': '#969696'});
         d3.selectAll(".states").style("fill", function(d){
                 return choropleth(d, colorize);
@@ -259,20 +252,20 @@ function drawMenu(){
                 .text(function(d) {
                     return choropleth(d, colorize);
             });
-        createMenu(arrayOverview, colorArrayOverview, "Measures Type Passed:", textArray[0], linkArray[0]);
-        $(".Overview").css({'background-color': '#CCCCCC','color': '#333333'});
+        createMenu(arrayOverview, colorArrayOverview, "Measure Type Passed:", textArray[0], linkArray[0]);
+        $(".Overview").css({'background-color': '#009fda','color': 'white'});
         //removes chart
         var oldChart = d3.selectAll(".chart").remove();
         var oldRects = d3.selectAll(".chartRect").remove();
     });
     
-    //click changes for Jurisdiction Type
-     $(".Jurisdiction").click(function(){ 
+    //click changes for totalSpending
+    $(".Spending").click(function(){  
         expressed = Category[1];
-        $('.stepBackward').prop('disabled', false);
-        $('.play').prop('disabled', false);
-        $('.pause').prop('disabled', false);
-        $('.stepForward').prop('disabled', false);
+        $('.stepBackward').hide('disabled', false);
+        $('.play').hide('disabled', false);
+        $('.pause').hide('disabled', false);
+        $('.stepForward').hide('disabled', false);
         d3.selectAll(".menu-options div").style({'background-color': '#e1e1e1','color': '#969696'});
         d3.selectAll(".states").style("fill", function(d){
                 return choropleth(d, colorize);
@@ -281,21 +274,43 @@ function drawMenu(){
                 .text(function(d) {
                     return choropleth(d, colorize);
             });
-        createMenu(arrayJurisdiction, colorArrayJurisdiction, "Type: ", textArray[1], linkArray[1]);
-        $(".Jurisdiction").css({'background-color': '#CCCCCC','color': '#333333'});
+        createMenu(arraySpending, colorArraySpending, "Spending: ", textArray[1], linkArray[1]);
+        $(".Spending").css({'background-color': '#009fda','color': 'white'});
+        //removes chart
+        var oldChart = d3.selectAll(".chart").remove();
+        var oldRects = d3.selectAll(".chartRect").remove();
+        });
+    
+    //click changes for JurisdictionType
+     $(".Jurisdiction").click(function(){ 
+        expressed = Category[2];
+        $('.stepBackward').show('disabled', false).prop('disabled', false);
+        $('.play').show('disabled', false).prop('disabled', false);
+        $('.pause').show('disabled', false).prop('disabled', false);
+        $('.stepForward').show('disabled', false).prop('disabled', false);
+        d3.selectAll(".menu-options div").style({'background-color': '#e1e1e1','color': '#969696'});
+        d3.selectAll(".states").style("fill", function(d){
+                return choropleth(d, colorize);
+            })
+            .select("desc")
+                .text(function(d) {
+                    return choropleth(d, colorize);
+            });
+        createMenu(arrayJurisdiction, colorArrayJurisdiction, "Type of Measure: ", textArray[2], linkArray[2]);
+        $(".Jurisdiction").css({'background-color': '#009fda','color': 'white'});
         //removes and creates correct chart
         var oldChart = d3.select(".chart").remove();
         var oldRects = d3.selectAll(".chartRect").remove();
         setChart(yearExpressed);
      });
     
-    //click changes for totalSpending
-    /*$(".Counseling").click(function(){  
-        expressed = Category[2];
-        $('.stepBackward').prop('disabled', false);
-        $('.play').prop('disabled', false);
-        $('.pause').prop('disabled', false);
-        $('.stepForward').prop('disabled', false);
+     //click changes for totalSpending
+    $(".Finance").click(function(){  
+        expressed = Category[3];
+        $('.stepBackward').show('disabled', false).prop('disabled', false);
+        $('.play').show('disabled', false).prop('disabled', false);
+        $('.pause').show('disabled', false).prop('disabled', false);
+        $('.stepForward').show('disabled', false).prop('disabled', false);
         d3.selectAll(".menu-options div").style({'background-color': '#e1e1e1','color': '#969696'});
         d3.selectAll(".states").style("fill", function(d){
                 return choropleth(d, colorize);
@@ -304,15 +319,15 @@ function drawMenu(){
                 .text(function(d) {
                     return choropleth(d, colorize);
             });
-        createMenu(arrayCounseling, colorArrayCounseling, "Mandated Counseling: ", textArray[2], linkArray[2]);
-        $(".Counseling").css({'background-color': '#CCCCCC','color': '#333333'});
+        createMenu(arrayfinanceType, colorArrayFinance, "Finance Mechanism: ", textArray[3], linkArray[3]);
+        $(".Finance").css({'background-color': '#009fda','color': 'white'});
         //removes and creates correct chart
         var oldChart = d3.select(".chart").remove();
         var oldRects = d3.selectAll(".chartRect").remove();
         setChart(yearExpressed);
         });
     
-    */
+   
 }; //END drawMenu
 
 //creates dropdown menu
@@ -433,7 +448,7 @@ function createMenu(arrayX, arrayY, title, infotext, infolink){
         .attr("y", 30)
         .attr("class","title")
         .text(title)
-        .style("font-size", '16px');
+        .style("font-size", '14px');
     
     //draws and shades boxes for menu
     for (b = 0; b < arrayX.length; b++){  
@@ -442,9 +457,9 @@ function createMenu(arrayX, arrayY, title, infotext, infolink){
             .enter()
             .append("rect")
             .attr("class", "items")
-            .attr("width", 35)
-            .attr("height", 40)
-            .attr("x", 15);
+            .attr("width", 30)
+            .attr("height", 30)
+            .attr("x", 10);
         
         menuItems.data(yArray)
             .attr("y", function(d, i){
@@ -468,11 +483,11 @@ function createMenu(arrayX, arrayY, title, infotext, infolink){
                 return arrayX[i]
             }
         })
-        .style({'font-size': '14px', 'font-family': 'Open Sans, sans-serif'});
+        .style({'font-size': '12px', 'font-family': 'Open Sans, sans-serif'});
     
         menuLabels.data(yArray)
             .attr("y", function(d, i){
-                return d + 30;
+                return d + 20;
             });
     
      //creates menuBoxes
@@ -484,170 +499,9 @@ function createMenu(arrayX, arrayY, title, infotext, infolink){
         .html(infotext + infolink);
 }; //end createMenu
 
-//creates proportional symbol overlay with click events
-/*function overlay(path, cpcRadius, abortionRadius, map, cpc, abortionprovider){
-    $(".cpc-section").click(function(){
-        var cpcDiv = document.getElementById('cpc-centers');
-        var cpcInsetDiv = document.getElementById('cpc-inset');
-        if (d3.selectAll(".cpcLocations")[0].length > 0){
-            removeCPC = d3.selectAll(".cpcLocations").remove();
-            removeCPCInfo = d3.selectAll(".cpcMenuInfoBox").remove();
-            cpcInsetDiv.style.visibility = "hidden";
-        } else {
-            cpcPoints(map, cpc, path, cpcRadius);
-            cpcInsetDiv.style.visibility = "visible";
-        }
-    });
-    
-    $(".abortion-section").click(function(){  
-        var abortionDiv = document.getElementById('abortion-centers');
-        var insetDiv = document.getElementById('abortion-inset');
-        if (d3.selectAll(".abortionLocations")[0].length > 0){
-            removeAbortion = d3.selectAll(".abortionLocations").remove();
-            removeAbortionInfo = d3.selectAll(".abortionMenuInfoBox").remove();
-            insetDiv.style.visibility = "hidden";
-        } else {
-            abortionPoints(map, abortionprovider, path, abortionRadius);
-            insetDiv.style.visibility = "visible";
-        }
-    }); 
-};*/ //END overlay function
-
-//creates cpc point data
-/*function cpcPoints(map, cpc, path, cpcRadius){
-    //adds cpc locations
-    map.selectAll(".cpcLocations")
-        .data(cpc.features)
-        .enter()
-        .append("path")
-        .attr("class", "cpcLocations")
-        .attr('d', path.pointRadius(function(d){
-            return cpcRadius(d.properties.Count);
-        }));   
-    
-    //creates menuBoxes
-    var menuInfoBox = d3.select(".sequence-buttons")
-        .append("div")
-        .attr("width", menuInfoWidth)
-        .attr("height", menuInfoHeight)
-        .attr("class", "cpcMenuInfoBox")
-        .html(textArray[6] + linkArray[6]);
-};*/ //end cpcPoints
-
-//creates abortion providers point data
-/*function abortionPoints(map, abortionprovider, path, abortionRadius){
-    //adds abortion provider locations
-    map.selectAll(".abortionLocations")
-        .data(abortionprovider.features)
-        .enter()
-        .append("path")
-        .attr("class", "abortionLocations")
-        .attr('d', path.pointRadius(function(d){
-            return abortionRadius(d.properties.Count);
-        }));
-    
-    //creates menuBoxes
-    var menuInfoBox = d3.select(".sequence-buttons")
-        .append("div")
-        .attr("width", menuInfoWidth)
-        .attr("height", menuInfoHeight)
-        .attr("class", "abortionMenuInfoBox")
-        .text(textArray[7]);
-}; //end abortionPoints
-
-//creates proportional symbol legend
-function createInset() {
-    var oldItems3 = d3.selectAll(".cpcCircles").remove();
-    var oldItems4 = d3.selectAll(".abortionCircles").remove();
-    var cpcRadiusArray = [2, 11.85, 20];
-    var cpcLabelArray = [1, 4, 8];
-    var abortionRadiusArray = [2, 16.23, 23];
-    var abortionLabelArray = [1, 6, 11];
-    
-    //creates menuBoxes
-    cpcMenuBox = d3.select(".cpc-inset")
-            .append("svg")
-            .attr("width", otherMenuWidth)
-            .attr("height", otherMenuHeight)
-            .attr("class", "cpcmenuBox");
-    
-    //draws and shades circles for menu
-   var cpcCircles = cpcMenuBox.selectAll(".cpcCircles")
-        .data(cpcRadiusArray)
-        .enter()
-        .append("circle")
-        .attr("cy", 30)
-        .attr("cx", function(d, i){
-            return (1*d)+(i*50)+10;
-        })
-        .attr("r", function(d, i){
-            return d;
-        })
-        .attr("class", "cpcCircles")
-        .style({'fill': '#FA6E39','fill-opacity': '0.7'});  
-    
-    //labels cpc circles
-    var cpcLabels = cpcMenuBox.selectAll(".cpcOverlayLabels")
-        .data(cpcLabelArray)
-        .enter()
-        .append("text")
-        .attr("class", "cpcOverlayLabels")
-        .attr("y", 35)
-        .text(function(d, i){
-            for (var k = 0; k < cpcLabelArray.length; k++){
-                return cpcLabelArray[i]
-            }
-        })
-        .style({'font-size': '14px', 'font-family': 'Open Sans, sans-serif'});
-    
-        cpcLabels.data(cpcRadiusArray)
-            .attr("x", function(d, i){
-                return (2*d)+(i*50)+15;
-            });
-    //creates abortion info inset
-    abortionMenuBox = d3.select(".abortion-inset")
-        .append("svg")
-        .attr("width", otherMenuWidth)
-        .attr("height", otherMenuHeight)
-        .attr("class", "abortionMenuBox");
-    
-     //draws and shades circles for menu
-    var abortionCircles = abortionMenuBox.selectAll(".abortionCircles")
-        .data(abortionRadiusArray)
-        .enter()
-        .append("circle")
-        .attr("cy", 30)
-        .attr("cx", function(d, i){
-            return (1*d)+(i*50)+10;
-        })
-        .attr("r", function(d, i){
-            return d;
-        })
-        .attr("class", "abortionCircles")
-        .style({'fill': '#37C4AB','fill-opacity': '0.7'}); 
-    
-    //labels abortion circles
-    var abortionLabels = abortionMenuBox.selectAll(".abortionOverlayLabels")
-        .data(abortionLabelArray)
-        .enter()
-        .append("text")
-        .attr("class", "abortionOverlayLabels")
-        .attr("y", 35)
-        .text(function(d, i){
-            for (var k = 0; k < abortionLabelArray.length; k++){
-                return abortionLabelArray[i]
-            }
-        })
-        .style({'font-size': '14px', 'font-family': 'Open Sans, sans-serif'});
-    
-        abortionLabels.data(abortionRadiusArray)
-            .attr("x", function(d, i){
-                return (2*d)+(i*50)+15;
-            });  
-};*/ //END create inset
 
 //---------------------------------------------//
-/* BEAUTIFUL GREYSCALE RAINBOW COLOR GENERATOR */
+/* GENERATORS */
 //---------------------------------------------//
 //SET UP COLOR ARRAYS FOR MAP
 function colorScale(data){
@@ -658,19 +512,13 @@ function colorScale(data){
     } else if (expressed === "jurisdictionType") {
         currentColors = colorArrayJurisdiction;
         currentArray = arrayJurisdiction;
-    }; /*else if (expressed === "consentData") {
-        currentColors = colorArrayJurisdiction;
-        currentArray = arrayJurisdiction;
-    } else if (expressed === "counseling") {
-        currentColors = colorArrayCounseling;
-        currentArray = arrayCounseling;
-    } else if (expressed === "waitingPeriod") {
-         currentColors = colorArrayOverview;
-         currentArray = arrayWaitingPeriod;
-    } else if (expressed === "ultrasound") {
-        currentColors = colorArrayUltrasound;
-        currentArray = arrayUltrasound;
-    };*/
+    } else if (expressed === "totalSpending") {
+        currentColors = colorArraySpending;
+        currentArray = arraySpending;
+    } else if (expressed === "financeType") {
+        currentColors = colorArrayFinance;
+        currentArray = arrayfinanceType;
+    }; 
 
     scale = d3.scale.ordinal()
                 .range(currentColors)
@@ -685,19 +533,10 @@ function colorScaleChart(data) {
     } else if (expressed === "jurisdictionType") {
         currentColors = colorArrayJurisdiction;
         currentArray = arrayJurisdiction;
-    }; /*else if (expressed === "consentData") {
-        currentColors = colorArrayProhibited;
-        currentArray = arrayProhibited;
-    } else if (expressed === "counseling") {
-        currentColors = colorArrayCounseling;
-        currentArray = arrayCounseling;
-    } else if (expressed === "waitingPeriod") {
-         currentColors = colorArrayOverview;
-         currentArray = arrayWaitingPeriod;
-    } else if (expressed === "ultrasound") {
-        currentColors = colorArrayUltrasound;
-        currentArray = arrayUltrasound;
-    };*/
+    } else if (expressed === "totalSpending") {
+        currentColors = colorArraySpending;
+        currentArray = arraySpending;
+    }; 
 
     scale = d3.scale.ordinal()
                 .range(currentColors)
@@ -720,7 +559,6 @@ function choroplethChart(d, colorize) {
 //---------------------------------------------//
 /*              START CHART FUNCTIONS          */
 //---------------------------------------------//
-// Robin's section
 
 // setChart function sets up the timeline chart and calls the updateChart function
 function setChart(yearExpressed) {
@@ -740,7 +578,7 @@ function setChart(yearExpressed) {
     var squareContainer = chart.append("g")
         .attr("transform", "translate(" + margin.left + ', ' + margin.top + ')');
 
-    //for-loop creates an array of feature objects that stores three values: thisYear (for the year that a law was implemented), newLaw (the categorization of the new policy) and a feature object (the state that the law changed in)
+    //for-loop creates an array of feature objects that stores three values
     for (var feature in joinedJson) {
         var featureObject = joinedJson[feature];
         for (var thisYear = 1; thisYear<=keyArray.length-1; thisYear++){
@@ -889,36 +727,14 @@ function highlight(data) {
     //set up the text for the dynamic labels for the map
     //labels should match the yearExpressed and the state of the law during that year
     if (expressed == "gradeData") {
-        labelAttribute = "Type of Measure: "+feature[expressed][Number(yearExpressed)];
+        labelAttribute = "Type of Measure(s): "+feature[expressed][Number(yearExpressed)];
     } else if (expressed == "jurisdictionType") {
-        labelAttribute = yearExpressed+"<br>Status:<br>"+feature[expressed][Number(yearExpressed)];
-    }/* else if (expressed == "counseling") {
-        if (feature[expressed][Number(yearExpressed)] == "Yes") {
-            labelAttribute = yearExpressed+"<br>"+"Pre-abortion counseling mandated by law";
-        } else if (feature[expressed][Number(yearExpressed)] == "No") {
-            labelAttribute = yearExpressed+"<br>"+"No mandated counseling";
-        };
-    } else if (expressed == "waitingPeriod") {
-        if (feature[expressed][Number(yearExpressed)] == "None") {
-            labelAttribute = yearExpressed+"<br>No mandated waiting period";
-        } else {
-            labelAttribute = yearExpressed+"<br>Mandated waiting period: "+feature[expressed][Number(yearExpressed)];
-        };
-    } else if (expressed == "consentData") {
-        if (feature[expressed][Number(yearExpressed)] == "none") {
-            labelAttribute = yearExpressed+"<br>No law requiring parental consent for minors";
-        } else if (feature[expressed][Number(yearExpressed)] == "notice") {
-            labelAttribute = yearExpressed+"<br>Minor must notify parents about an abortion";
-        } else if (feature[expressed][Number(yearExpressed)] == "consent") {
-            labelAttribute = yearExpressed+"<br>Minor's parents must give consent before abortion can be performed";
-        };
-    } else if (expressed == "ultrasound") {
-        if (feature[expressed][Number(yearExpressed)] == "none") {
-        labelAttribute = yearExpressed+"<br>No mandatory ultrasound law";
-        } else {
-            labelAttribute = yearExpressed+"<br>"+feature[expressed][Number(yearExpressed)];
-        }
-    }*/
+        labelAttribute = yearExpressed+"<br>"+feature[expressed][Number(yearExpressed)];
+    } else  if (expressed == "totalSpending") {
+        labelAttribute = "Spending: "+feature[expressed][Number(yearExpressed)];
+    } else if (expressed == "financeType") {
+        labelAttribute = "Finance Mechanism: "+feature[expressed][Number(yearExpressed)];
+    }
 
     var infoLabel = d3.select(".map")
         .append("div")
@@ -950,34 +766,18 @@ function highlightChart(data) {
     //set up the text for the dynamic labels
     //when highlighting the chart, the labels reflect the year the law changed and the law that was changed that year, regardless of which year is being shown on the map
     if (expressed == "jurisdictionType") {
-        labelAttribute = data.yearChanged+"<br>Type "+data.newLaw;
-    }/*else if (expressed == "counseling") {
-        if (data.newLaw == "Yes") {
-            labelAttribute = data.yearChanged+"<br>"+"Pre-abortion counseling mandated by law";
-        } else if (data.newLaw == "No") {
-            labelAttribute = data.yearChanged+"<br>"+"No mandated counseling";
-        };
-    } else if (expressed == "waitingPeriod") {
-        if (data.newLaw == "None") {
-            labelAttribute = data.yearChanged+"<br>No mandated waiting period";
+        if (data.newLaw == "No State Measures Passed") {
+        labelAttribute = data.yearChanged+"<br>No Measure Passed";
         } else {
-            labelAttribute = data.yearChanged+"<br>Mandated waiting period: "+data.newLaw;
-        };
-    } else if (expressed == "consentData") {
-        if (data.newLaw == "none") {
-            labelAttribute = data.yearChanged+"<br>No law requiring parental consent for minors";
-        } else if (data.newLaw == "notice") {
-            labelAttribute = data.yearChanged+"<br>Minor must notify parents about an abortion";
-        } else if (data.newLaw == "consent") {
-            labelAttribute = data.yearChanged+"<br>Minor's parents must give consent before abortion can be performed";
-        };
-    } else if (expressed == "ultrasound") {
-        if (data.newLaw == "none") {
-        labelAttribute = data.yearChanged+"<br>No mandatory ultrasound law";
-        } else {
-            labelAttribute = data.yearChanged+"<br>"+data.newLaw;
+        labelAttribute = data.yearChanged+"<br>Jurisdiction Type: "+data.newLaw;
         }
-    }*/
+    } else if (expressed == "financeType") {
+        if (data.newLaw == "none") {
+        labelAttribute = data.yearChanged+"<br>No Measure Passed";
+        } else {
+            labelAttribute = data.yearChanged+"<br>Finance Mechanism: "+data.newLaw;
+        }
+    } 
 
     var infoLabel = d3.select(".map")
         .append("div")
@@ -1008,7 +808,6 @@ function dehighlight(data) {
     selection.style("fill", fillColor);
 
     //dehighlighting the chart
-    //there is a small bug in here for states that have 2 laws passed during different years, will fix later
     var chartSelection = d3.selectAll("."+feature.postal)
         .filter(".chartRect");
     var chartFillColor = chartSelection.select("desc").text();

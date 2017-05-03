@@ -42,11 +42,13 @@
 }
 
 .jumbotron {
-    padding: 20px;
-    padding-left: 60px;
-    padding-right: 60px;
+    padding: 10px;
+    padding-left: 80px;
+    padding-right: 80px;
     color: #f9f9f9; 
     background-color:  #009fda;
+    text-align: center;
+    font-size: 18px;
 }
 
 .image2 {
@@ -86,8 +88,8 @@
 .menu-inset {
     float: right;
     border-style: solid;
-    border-width: 2px;
-    border-color: #CCCCCC;
+    border-width: 1px;
+    border-color: transparent;
 }
 
 .Overview {
@@ -110,42 +112,22 @@
     background-color: #CCCCCC;
 }
 
-.Counseling {
+.Spending {
     text-align: center;
     padding: 8%;
 }
 
-.Counseling:hover {
+.Spending:hover {
     color: #333333;
     background-color: #CCCCCC;
 }
 
-.Waiting {
+.Finance {
     text-align: center;
     padding: 8%;
 }
 
-.Waiting:hover {
-    color: #333333;
-    background-color: #CCCCCC;
-}
-
-.Parental {
-    text-align: center;
-    padding: 8%;
-}
-
-.Parental:hover {
-    color: #333333;
-    background-color: #CCCCCC;
-}
-
-.Ultrasound {
-    text-align: center;
-    padding: 8%;
-}
-
-.Ultrasound:hover {
+.Finance:hover {
     color: #333333;
     background-color: #CCCCCC;
 }
@@ -157,43 +139,6 @@
     cursor: pointer;
 }
 
-.cpc {
-    float: left;
-    background-color: rgba(250, 110, 57, 1);
-    color: #fff;
-    text-align: center;
-    padding: 1.5%;
-}
-
-.cpc:hover {
-    color: #fff;
-    background-color: #f95618;
-}
-
-#cpc-inset {
-    float: right;
-    background-color: #fff;
-    visibility: hidden;
-}
-
-.abortion {
-    float: left;
-    color: #fff;
-    background-color:  rgba(55, 196, 171, 1);
-    text-align: center;
-    padding: 3%;
-}
-
-.abortion:hover {
-    color:  #fff;
-    background-color: #248271;
-}
-
-#abortion-inset {
-    float: right;
-    background-color: #fff;
-    visibility: hidden;
-}
 
 .title {
     font-family: 'Roboto Slab', sans-serif;

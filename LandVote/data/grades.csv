@@ -3,11 +3,11 @@ AL,none
 AK,none
 AZ,none
 AR,none
-CA,"County,Municipal & Special District"
+CA,"County,Municipal & Special Dist."
 CO,County and Municipal
 CT,Municipal
 DE,none
-FL,County 
+FL,County
 GA,Municipal
 HI,none
 ID,none
@@ -35,7 +35,7 @@ NC,Municipal
 ND,none
 OH,County and Municipal
 OK,Municipal
-OR,Special District
+OR,Special Dist.
 PA,Municipal
 RI,State
 SC,County
@@ -44,8 +44,8 @@ TN,none
 TX,Municipal
 UT,Municipal
 VT,none
-VA,County 
-WA,Municipal and Special District
+VA,County
+WA,Municipal and Special Dist.
 WV,none
 WI,none
 WY,none
