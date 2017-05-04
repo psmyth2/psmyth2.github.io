@@ -11,7 +11,7 @@ var currentColors = [];
 var menuWidth = 250, menuHeight = 400;
 var otherMenuWidth = 200, otherMenuHeight = 70;
 var menuInfoWidth = 250, menuInfoHeight = 100;
-var textArray = ["In 2016, there were <b>84</b> successful measures across the country. <b>39</b> of those measures were facilitated and supported by The Trust for Public Land's conservation finance services.","Total conservation funding approved from <b>1988 to Present</b>.","Successful state measures passed from <b>1988 to Present</b>.","Finance mechanisms for State approved measures from <b>1988 to Present</b>."]
+var textArray = ["In <b>2016</b>, there were <b>84</b> successful measures across the country. <b>39</b> of those measures were facilitated and supported by The Trust for Public Land's conservation finance services.","Total conservation funding approved from <b>1988 to Present</b>.","Successful state measures passed from <b>1988 to Present</b>.","Finance mechanisms for State approved measures from <b>1988 to Present</b>."]
 var linkArray = ["<a href = '#overview'> We provide an overview of these services here.</a>","<a href = '#spending'>  What kind of spending does LandVote track?</a>","<a href = '#jurisdiction'>  What kind of measures LandVote track?</a>","<a href = '#finance'>  What kinds of finance mechanisms exist for measures?</a>"];
 
 var joinedJson; //Variable to store the USA json combined with all attribute data

@@ -23,8 +23,8 @@
 #custom-bootstrap-menu.navbar-custom .navbar-nav>.active>a,
 #custom-bootstrap-menu.navbar-custom .navbar-nav>.active>a:hover,
 #custom-bootstrap-menu.navbar-custom .navbar-nav>.active>a:focus {
-    color: #fa6e39;
-    background-color: rgba(204, 204, 204, 1);
+    color: #ffffff;
+    background-color: rgba(0, 159, 218, 1);
 }
 #custom-bootstrap-menu.navbar-custom .navbar-toggle {
     border-color: #cccccc;
@@ -359,7 +359,7 @@
     left: -30px;
 }
 
-.chptrhead h2{
+.chptrhead h3{
     color: white;
     background-color: #525252;
     position: relative;
