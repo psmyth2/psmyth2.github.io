@@ -1,0 +1,269 @@
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Styling clusters</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+    integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+    integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+    crossorigin=""></script>
+
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@2.1.1/dist/esri-leaflet.js"
+    integrity="sha512-ECQqaYZke9cSdqlFG08zSkudgrdF6I1d8ViSa7I3VIszJyVqw4ng1G8sehEXlumdMnFYfzY0tMgdQa4WCs9IUw=="
+    crossorigin=""></script>
+	
+	<!-- Esri Leaflet Geocoder -->
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.2.6/dist/esri-leaflet-geocoder.css">
+    <script src="https://unpkg.com/esri-leaflet-geocoder@2.2.6"></script>
+
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+
+  </style>
+</head>
+<body>
+
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet.markercluster@1.0.4/dist/MarkerCluster.Default.css">
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet.markercluster@1.0.4/dist/MarkerCluster.css">
+<script src="https://unpkg.com/leaflet.markercluster@1.0.4/dist/leaflet.markercluster.js"></script>
+
+<!-- Load Clustered Feature Layer from CDN -->
+<script src="https://unpkg.com/esri-leaflet-cluster@2.0.0"></script>
+
+
+<style>
+  .cluster {
+    background: #009FDA;
+    border-radius: 50%;
+    text-align: center;
+    color: white;
+    font-weight: 700;
+    border: 1px solid #009FDA;
+    font-family: monospace;
+  }
+
+  .cluster:before {
+     content: ' ';
+     position: absolute;
+     border-radius: 50%;
+     z-index: -1;
+     top: 1px;
+     left: 1px;
+     right: 1px;
+     bottom: 1px;
+     border: 1px solid white;
+  }
+
+  .digits-1 {
+    font-size: 14px;
+    height: 28px;
+    width: 28px;
+    line-height: 28px;
+    margin-top: -14px;
+    margin-left: -14px;
+  }
+
+  .digits-2 {
+    font-size: 16px;
+    height: 34px;
+    width: 34px;
+    line-height: 35px;
+    margin-top: -17px;
+    margin-left: -17px;
+  }
+
+  .digits-2:before {
+    border-width: 2px;
+  }
+
+  .digits-3 {
+    font-size: 18px;
+    height: 48px;
+    width: 47px;
+    line-height: 47px;
+    border-width: 3px;
+    margin-top: -24px;
+    margin-left: -24px;
+  }
+
+  .digits-3:before {
+    border-width: 3px;
+  }
+
+  .digits-4 {
+    font-size: 18px;
+    height: 58px;
+    width: 58px;
+    line-height: 57px;
+    border-width: 4px;
+    margin-top: -29px;
+    margin-left: -29px;
+  }
+
+  .digits-4:before {
+    border-width: 4px;
+  }
+</style>
+
+<style>
+  #logo {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: none;
+    padding: 1em;
+  }
+  .leaflet-bar.map-text a {
+    color: #79BD8F;
+    display: inline;
+  }
+</style>
+
+
+<div id="map"></div>
+<div id="logo" class="site-logo"><a><img src="http://web.tplgis.org/Storymaps/Logos/TPL_H50.jpg" alt="Home"></a></div>
+
+<script>
+  var map = L.map('map').setView([37.687176, -97.330053], 5);
+	
+  
+  L.esri.basemapLayer('DarkGray').addTo(map);
+  
+  //Geocoder
+  var searchControl = L.esri.Geocoding.geosearch().addTo(map);
+
+  var results = L.layerGroup().addTo(map);
+
+  searchControl.on('results', function(data){
+    results.clearLayers();
+    for (var i = data.results.length - 1; i >= 0; i--) {
+      results.addLayer(L.marker(data.results[i].latlng));
+    }
+  });
+  
+   // Define some icons that represent our bus stops
+  var icons = {
+    createprojectclosings: L.icon({
+      iconUrl: 'https://dev.tplgis.org/PointClustering/esrileaflet/img/create.png',
+      iconRetinaUrl: 'https://dev.tplgis.org/PointClustering/esrileaflet/img/create@2x.png',
+      iconSize: [14, 14],
+      iconAnchor: [13.5, 17.5],
+      popupAnchor: [0, -11],
+    }),
+    protectprojectclosings: L.icon({
+      iconUrl: 'https://dev.tplgis.org/PointClustering/esrileaflet/img/protect.png',
+      iconRetinaUrl: 'https://dev.tplgis.org/PointClustering/esrileaflet/img/protect@2x.png',
+      iconSize: [14, 14],
+      iconAnchor: [13.5, 13.5],
+      popupAnchor: [0, -11],
+    })
+  };
+  
+  
+  var url = 'https://server2.tplgis.org/arcgis2/rest/services/National/P4P_ParkClosingPtCluster/FeatureServer/0';
+
+  //  (new constructor syntax at 2.0.0)
+  var projects = L.esri.Cluster.featureLayer({
+    url: url,
+	spiderfyOnMaxZoom:false,
+    //disableClusteringAtZoom: 16,
+    polygonOptions: {
+      color: '#009FDA',
+      weight: 4,
+      opacity: 1,
+      fillOpacity: 0.5,
+	  spiderfyDistanceMultiplier: 2
+    },
+	
+
+    // this function defines how the icons
+    // representing  clusters are created
+    iconCreateFunction: function(cluster) {
+      // get the number of items in the cluster
+      var count = cluster.getChildCount();
+
+      // figure out how many digits long the number is
+      var digits = (count+'').length;
+
+      // return a new L.DivIcon with our classes so we can
+      // style them with CSS. Take a look at the CSS in
+      // the <head> to see these styles. You have to set
+      // iconSize to null if you want to use CSS to set the
+      // width and height.
+      return new L.divIcon({
+        html: count,
+        className:'cluster digits-'+digits,
+        iconSize: null
+      });
+    },
+// this function defines how individual markers
+    // are created. You can see we are using the
+    // direction from the feature to get the icon
+    pointToLayer: function (feature, latlng) {
+		//console.log(feature);
+      var type = (feature.properties.URBAN) ? feature.properties.URBAN.split(' ').join('').toLowerCase(): 'none';
+	  var date = new Date(feature.properties.PROJ_DT).toDateString().slice(4);
+	  //console.log(date);
+      return new L.marker(latlng,{
+        icon: icons[type]
+      }).bindPopup('<b><u><center>' + feature.properties.NAME + '</b></u></center>'+
+				 "<b>Project completed on: <b>" + date +
+				 //"<br><b>Service Area Acres: <b>" + feature.properties.SUM_SA_ACRES +
+				 "<br><b>Acres: <b>" + feature.properties.PROJ_ACRES +
+				 "<br><b>State: <b>" + feature.properties.CLS_STATE +
+				 "<br><b>Initiative: <b>" + feature.properties.PROJ_INIT +
+				 "<br><b>Project Type: <b>" + feature.properties.URBAN
+					);
+console.log(feature.properties);					
+    }
+	
+  }).addTo(map);
+  
+  //projects.bindPopup(function(feature){
+    //return L.Util.template('<strong>{stop_name}</strong><br>{stop_desc}', feature.properties);
+  //});
+  
+  /*var proj = L.esri.dynamicMapLayer({
+    url: 'https://server2.tplgis.org/arcgis2/rest/services/National/P4P_ParkClosingPtCluster/MapServer',
+    opacity: 1,
+    fillOpacity: 1
+  }).addTo(map);
+
+  var identifiedFeature;
+  var pane = document.getElementById('selectedFeatures');
+
+  map.on('click', function (e) {
+    pane.innerHTML = 'Loading';
+    if (identifiedFeature){
+      map.removeLayer(identifiedFeature);
+    }
+    icons.identify().on(map).at(e.latlng).run(function(error, featureCollection){
+      // make sure at least one feature was identified.
+      if (featureCollection.features.length > 0) {
+        identifiedFeature = L.geoJSON(featureCollection.features[0]).addTo(map);
+		console.log(featureCollection.features[0])
+        var iconsDescription =
+          featureCollection.features[0].properties['CLS_INIT'] +
+          ' - ' +
+          featureCollection.features[0].properties['NAME'];
+        pane.innerHTML = iconsDescription;
+      }
+      else {
+        pane.innerHTML = 'No features identified.';
+      }
+    });
+  });*/
+ 
+</script>
+
+</body>
+</html>
